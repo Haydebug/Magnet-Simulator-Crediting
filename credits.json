@@ -2,16 +2,10 @@
     "376729891": {
         "amount": "2500",
         "message": "Testing out that gem system, heres 2500!",
-        "date": "10/9/2025",
-        "moderatorReason": "Showing example of the system",
-        "moderator": "Bug"
     },
 
     "23313558": {
         "amount": "250",
         "message": "Thanks for finding that bug, here's a 250 gem reward!",
-        "date": "10/2/2025",
-        "moderatorReason": "Showing example of the system",
-        "moderator": "Bug"
     }
 }
