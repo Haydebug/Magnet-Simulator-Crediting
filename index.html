@@ -203,26 +203,45 @@ function renderCredits() {
   `;
   creditsContainer.appendChild(addCard);
 
-  document.getElementById("addBtn").onclick = () => {
-    const id = document.getElementById("userId").value.trim();
-    const amt = document.getElementById("amount").value.trim();
-    const msg = document.getElementById("message").value.trim();
-    if (!id || !amt || !msg) return alert("Fill out all fields");
+document.getElementById("addBtn").onclick = () => {
+  let idInput = document.getElementById("userId").value.trim();
+  const amt = document.getElementById("amount").value.trim();
+  const msg = document.getElementById("message").value.trim();
+  if (!idInput || !amt || !msg) return alert("Fill out all fields");
 
-    const existing = credits[id];
-    const record = {
-      amount: amt,
-      message: msg,
-      status: "active",
-      history: existing?.history || []
-    };
-    record.history.push({ action: existing ? "updated" : "created", editor: adminName, timestamp: timestamp() });
+  // 🔧 Extract numeric ID if they paste a Roblox profile link (handles any format)
+  const linkMatch = idInput.match(/users\/(\d+)/);
+  if (linkMatch && linkMatch[1]) {
+    idInput = linkMatch[1]; // use the captured numeric user ID
+  }
 
-    const newCredits = { [id]: record };
-    for (const [k, v] of Object.entries(credits)) newCredits[k] = v;
-    credits = newCredits;
-    renderCredits();
+  // ✅ ensure only digits remain (safety net)
+  idInput = idInput.replace(/\D/g, "");
+
+  if (!idInput) {
+    alert("Invalid Roblox user ID or link.");
+    return;
+  }
+
+  const existing = credits[idInput];
+  const record = {
+    amount: amt,
+    message: msg,
+    status: "active",
+    history: existing?.history || []
   };
+  record.history.push({
+    action: existing ? "updated" : "created",
+    editor: adminName,
+    timestamp: timestamp()
+  });
+
+  const newCredits = { [idInput]: record };
+  for (const [k, v] of Object.entries(credits)) newCredits[k] = v;
+  credits = newCredits;
+  renderCredits();
+};
+
 
   // EXISTING RECORDS (only show active)
   for (const [userId, data] of Object.entries(credits)) {
