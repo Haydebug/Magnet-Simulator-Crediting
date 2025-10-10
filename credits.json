@@ -11,6 +11,18 @@
             }
         ]
     },
+    "2652976055": {
+        "amount": "7525",
+        "message": "Hey, here's your gems! Very sorry about that, have a good weekend!",
+        "status": "active",
+        "history": [
+            {
+                "action": "created",
+                "editor": "DrDoomerz",
+                "timestamp": 1760130718
+            }
+        ]
+    },
     "2684092442": {
         "amount": "10000",
         "message": "Sorry about the gems bro! We are fixing up the gift right now. Should be in next upd.",
@@ -24,4 +36,3 @@
         ]
     }
 }
-
