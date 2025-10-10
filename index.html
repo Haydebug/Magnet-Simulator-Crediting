@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>💎 Gem Credit Admin</title>
-<style>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💎 Gem Credit Admin</title>
+    <style>
   body {
     font-family: "Segoe UI", Arial, sans-serif;
     background: #0c0c0c;
@@ -112,36 +112,57 @@
     margin: 10px;
   }
 </style>
-</head>
-<body>
-<h1>💎 Gem Credit Admin</h1>
+  </head>
+  <body>
+    <h1>💎 Gem Credit Admin</h1>
 
-<div id="loginScreen">
-  <div id="loginBox">
-    <h2>Enter Admin Username</h2>
-    <input id="adminName" placeholder="Your username" />
-    <button id="loginBtn">Continue</button>
-  </div>
-</div>
+    <div style="text-align:center; margin-bottom:20px;">
+      <a
+        href="https://docs.google.com/document/d/1c4_YmqF05y6V988r44feE2WvAR9FsBRNS7C47jHb6Mo/edit?usp=sharing"
+        target="_blank" style="
+    display:inline-block;
+    background:#00ffa2;
+    color:#000;
+    font-weight:700;
+    padding:10px 20px;
+    border-radius:8px;
+    text-decoration:none;
+    transition:0.2s;
+  ">
+        PASTE your edits HERE!
+      </a>
 
-<div id="adminScreen">
-  <p style="text-align:center;color:#aaa;">Logged in as: <span id="currentAdmin"></span></p>
-  <div id="credits"></div>
-  <button id="copyBtn">📋 Copy Full JSON</button>
-  <div id="copyMsg">Copied!</div>
-</div>
+      <button id="copyBtn">Click to COPY your EDITS!</button>
+      <div id="copyMsg">Copied!</div>
+    </div>
 
-<!-- Delete confirmation modal -->
-<div id="modalOverlay">
-  <div id="modalBox">
-    <h3 style="color:#ff6060;">Confirm Deletion</h3>
-    <p id="modalText"></p>
-    <button id="confirmDeleteBtn" style="background:#ff6060;color:#fff;">Confirm Delete</button>
-    <button id="cancelDeleteBtn">Cancel</button>
-  </div>
-</div>
+    <div id="adminScreen">
+      <p style="text-align:center;color:#aaa;">Logged in as: <span
+          id="currentAdmin"></span></p>
+      <div id="credits"></div>
 
-<script>
+    </div>
+
+    <div id="loginScreen">
+      <div id="loginBox">
+        <h2>Enter Admin Username</h2>
+        <input id="adminName" placeholder="Your username" />
+        <button id="loginBtn">Continue</button>
+      </div>
+    </div>
+
+    <!-- Delete confirmation modal -->
+    <div id="modalOverlay">
+      <div id="modalBox">
+        <h3 style="color:#ff6060;">Confirm Deletion</h3>
+        <p id="modalText"></p>
+        <button id="confirmDeleteBtn"
+          style="background:#ff6060;color:#fff;">Confirm Delete</button>
+        <button id="cancelDeleteBtn">Cancel</button>
+      </div>
+    </div>
+
+    <script>
 let credits = {};
 let adminName = "";
 let pendingDelete = null;
@@ -253,9 +274,16 @@ document.getElementById("addBtn").onclick = () => {
       .map(h => `• ${h.action} by ${h.editor || "unknown"} @ ${new Date(h.timestamp * 1000).toLocaleString()}`)
       .join("<br>");
 
+      let lastUpdated = "";
+if (data.history && data.history.length > 0) {
+  const latest = data.history[data.history.length - 1];
+  lastUpdated = new Date(latest.timestamp * 1000).toLocaleString();
+}
+
     div.innerHTML = `
-      <strong style="color:#00ffa2;">User ${userId}</strong>
-      <label>Amount</label>
+  <strong style="color:#00ffa2;">User ${userId}</strong>
+  <div style="font-size:12px;color:#888;margin-top:3px;">Last updated: ${lastUpdated || "unknown"}</div>
+  <label>Amount</label>
       <input value="${data.amount}" data-id="${userId}" data-type="amount">
       <label>Message</label>
       <textarea rows="2" data-id="${userId}" data-type="message">${data.message}</textarea>
@@ -349,5 +377,5 @@ if (storedName) {
 }
 document.getElementById("loginBtn").onclick = login;
 </script>
-</body>
+  </body>
 </html>
