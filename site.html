@@ -3,54 +3,176 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Gem Credit Editor</title>
+<title>💎 Gem Credit Admin</title>
 <style>
-  body { font-family: Arial, sans-serif; background: #101010; color: #eee; margin: 0; padding: 20px; }
-  h1 { color: #00ffa2; }
-  #credits { margin-top: 20px; }
-  .entry { background: #1e1e1e; border-radius: 8px; padding: 10px 15px; margin-bottom: 10px; }
-  label { display: block; margin-top: 8px; }
-  input, textarea { width: 100%; padding: 6px; border-radius: 5px; border: none; margin-top: 3px; }
-  button { background: #00ffa2; color: #000; font-weight: bold; border: none; border-radius: 5px; padding: 8px 15px; margin-top: 10px; cursor: pointer; }
-  button:hover { opacity: 0.8; }
-  pre { background: #181818; padding: 10px; border-radius: 6px; overflow-x: auto; }
-  .username { color: #00ffa2; font-weight: bold; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #0c0c0c;
+    color: #eee;
+    margin: 0;
+    padding: 30px;
+  }
+  h1 { color: #00ffa2; text-align: center; margin-bottom: 10px; }
+  #loginScreen, #adminScreen { display: none; }
+  #loginBox {
+    max-width: 350px;
+    background: #1b1b1b;
+    padding: 25px;
+    border-radius: 10px;
+    margin: 100px auto;
+    text-align: center;
+  }
+  #loginBox input {
+    width: 100%;
+    background: #121212;
+    color: #eee;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+    text-align: center;
+  }
+  #loginBox button {
+    background: #00ffa2;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 15px;
+    font-weight: 600;
+    margin-top: 15px;
+    cursor: pointer;
+  }
+  #credits {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .entry {
+    background: #1b1b1b;
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: 0.2s;
+  }
+  .entry:hover { background: #242424; }
+  .entry input, .entry textarea {
+    width: 100%;
+    background: #121212;
+    color: #eee;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 4px;
+  }
+  label { font-size: 13px; color: #9f9f9f; display: block; margin-top: 6px; }
+  button {
+    background: #00ffa2;
+    color: #000;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 15px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.2s;
+  }
+  button:hover { opacity: 0.85; }
+  #copyBtn {
+    display: block;
+    margin: 30px auto 0;
+    font-size: 15px;
+  }
+  #copyMsg {
+    text-align: center;
+    margin-top: 10px;
+    color: #00ffa2;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  /* Modal styling */
+  #modalOverlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+  }
+  #modalBox {
+    background: #1b1b1b;
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 350px;
+    text-align: center;
+  }
+  #modalBox button {
+    margin: 10px;
+  }
 </style>
 </head>
 <body>
-<h1>💎 Gem Credit Editor</h1>
+<h1>💎 Gem Credit Admin</h1>
 
-<div id="credits"></div>
+<div id="loginScreen">
+  <div id="loginBox">
+    <h2>Enter Admin Username</h2>
+    <input id="adminName" placeholder="Your username" />
+    <button id="loginBtn">Continue</button>
+  </div>
+</div>
 
-<h2>Add New Credit</h2>
-<label>User ID</label>
-<input id="userId" type="text" placeholder="e.g. 23313558">
-<label>Amount</label>
-<input id="amount" type="number" placeholder="e.g. 250">
-<label>Message</label>
-<textarea id="message" rows="2" placeholder="Reason for credit"></textarea>
-<button id="addBtn">Add Credit</button>
+<div id="adminScreen">
+  <p style="text-align:center;color:#aaa;">Logged in as: <span id="currentAdmin"></span></p>
+  <div id="credits"></div>
+  <button id="copyBtn">📋 Copy Full JSON</button>
+  <div id="copyMsg">Copied!</div>
+</div>
 
-<h2>Updated JSON</h2>
-<pre id="jsonOutput"></pre>
+<!-- Delete confirmation modal -->
+<div id="modalOverlay">
+  <div id="modalBox">
+    <h3 style="color:#ff6060;">Confirm Deletion</h3>
+    <p id="modalText"></p>
+    <button id="confirmDeleteBtn" style="background:#ff6060;color:#fff;">Confirm Delete</button>
+    <button id="cancelDeleteBtn">Cancel</button>
+  </div>
+</div>
 
 <script>
-const creditsContainer = document.getElementById("credits");
-const output = document.getElementById("jsonOutput");
 let credits = {};
-let usernameCache = {};
+let adminName = "";
+let pendingDelete = null;
+const creditsContainer = document.getElementById("credits");
+const copyMsg = document.getElementById("copyMsg");
+const modal = document.getElementById("modalOverlay");
+const modalText = document.getElementById("modalText");
 
-async function getUsername(userId) {
-  if (usernameCache[userId]) return usernameCache[userId];
-  try {
-    const res = await fetch(`https://users.roblox.com/v1/users/${userId}`);
-    const data = await res.json();
-    const name = data.displayName || data.name || "Unknown";
-    usernameCache[userId] = name;
-    return name;
-  } catch {
-    return "Unknown";
-  }
+function timestamp() {
+  return Math.floor(Date.now() / 1000);
+}
+
+function showLogin() {
+  document.getElementById("loginScreen").style.display = "block";
+  document.getElementById("adminScreen").style.display = "none";
+}
+
+function showAdmin() {
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("adminScreen").style.display = "block";
+  document.getElementById("currentAdmin").textContent = adminName;
+}
+
+function login() {
+  const nameInput = document.getElementById("adminName");
+  const name = nameInput.value.trim();
+  if (!name) return alert("Please enter a username");
+  adminName = name;
+  localStorage.setItem("adminName", name);
+  showAdmin();
+  loadCredits();
 }
 
 async function loadCredits() {
@@ -58,50 +180,155 @@ async function loadCredits() {
     const res = await fetch("https://raw.githubusercontent.com/Haydebug/Magnet-Simulator-Crediting/main/credits.json");
     credits = await res.json();
     renderCredits();
-    updateOutput();
   } catch (err) {
-    output.textContent = "❌ Failed to load credits.json: " + err;
+    alert("❌ Failed to load credits.json: " + err);
   }
 }
 
-async function renderCredits() {
+function renderCredits() {
   creditsContainer.innerHTML = "";
+
+  // ADD CREDIT CARD
+  const addCard = document.createElement("div");
+  addCard.className = "entry";
+  addCard.innerHTML = `
+    <strong style="color:#00ffa2;">➕ Add New Credit</strong>
+    <label>User ID</label>
+    <input id="userId" type="text" placeholder="e.g. 23313558" />
+    <label>Amount</label>
+    <input id="amount" type="number" placeholder="e.g. 250" />
+    <label>Message</label>
+    <textarea id="message" rows="2" placeholder="Reason for credit"></textarea>
+    <button id="addBtn">Add Credit</button>
+  `;
+  creditsContainer.appendChild(addCard);
+
+  document.getElementById("addBtn").onclick = () => {
+    const id = document.getElementById("userId").value.trim();
+    const amt = document.getElementById("amount").value.trim();
+    const msg = document.getElementById("message").value.trim();
+    if (!id || !amt || !msg) return alert("Fill out all fields");
+
+    const existing = credits[id];
+    const record = {
+      amount: amt,
+      message: msg,
+      status: "active",
+      history: existing?.history || []
+    };
+    record.history.push({ action: existing ? "updated" : "created", editor: adminName, timestamp: timestamp() });
+
+    const newCredits = { [id]: record };
+    for (const [k, v] of Object.entries(credits)) newCredits[k] = v;
+    credits = newCredits;
+    renderCredits();
+  };
+
+  // EXISTING RECORDS (only show active)
   for (const [userId, data] of Object.entries(credits)) {
+    if (data.status === "deleted") continue;
+
     const div = document.createElement("div");
     div.className = "entry";
-
-    const username = await getUsername(userId);
+    const historyList = (data.history || [])
+      .map(h => `• ${h.action} by ${h.editor || "unknown"} @ ${new Date(h.timestamp * 1000).toLocaleString()}`)
+      .join("<br>");
 
     div.innerHTML = `
-      <span class="username">${username}</span> (${userId})<br>
-      💰 ${data.amount}<br>
-      📝 ${data.message}
+      <strong style="color:#00ffa2;">User ${userId}</strong>
+      <label>Amount</label>
+      <input value="${data.amount}" data-id="${userId}" data-type="amount">
+      <label>Message</label>
+      <textarea rows="2" data-id="${userId}" data-type="message">${data.message}</textarea>
+      <button onclick="showDeleteModal('${userId}')">🗑️ Delete</button>
+      <details style="margin-top:10px;"><summary>History</summary>
+        <div style="margin-top:5px;font-size:12px;color:#aaa;">${historyList || "(no history)"}</div>
+      </details>
     `;
     creditsContainer.appendChild(div);
   }
+
+  creditsContainer.querySelectorAll("input, textarea").forEach(el => {
+    el.addEventListener("input", e => {
+      const id = e.target.dataset.id;
+      const type = e.target.dataset.type;
+      if (id && credits[id]) {
+        credits[id][type] = e.target.value;
+        credits[id].history.push({ action: "edited", editor: adminName, timestamp: timestamp() });
+      }
+    });
+  });
 }
 
-function updateOutput() {
-  output.textContent = JSON.stringify(credits, null, 4);
+function showDeleteModal(userId) {
+  pendingDelete = userId;
+  modalText.textContent = `Are you sure you want to delete credit(s) for user ${userId}?`;
+  modal.style.display = "flex";
 }
 
-document.getElementById("addBtn").onclick = () => {
-  const id = document.getElementById("userId").value.trim();
-  const amt = document.getElementById("amount").value.trim();
-  const msg = document.getElementById("message").value.trim();
-
-  if (!id || !amt || !msg) return alert("Fill out all fields");
-
-  credits[id] = { amount: amt, message: msg };
-  renderCredits();
-  updateOutput();
-
-  document.getElementById("userId").value = "";
-  document.getElementById("amount").value = "";
-  document.getElementById("message").value = "";
+document.getElementById("cancelDeleteBtn").onclick = () => {
+  modal.style.display = "none";
+  pendingDelete = null;
 };
 
-loadCredits();
+document.getElementById("confirmDeleteBtn").onclick = () => {
+  if (!pendingDelete) return;
+
+  const id = pendingDelete;
+  const entry = credits[id];
+  if (!entry) {
+    modal.style.display = "none";
+    pendingDelete = null;
+    return;
+  }
+
+  // create deleted record key before modifying credits
+  const newKey = `${id}_del_${timestamp()}`;
+  const deletedEntry = { ...entry }; // clone to avoid mutation confusion
+  deletedEntry.status = "deleted";
+  if (!deletedEntry.history) deletedEntry.history = [];
+  deletedEntry.history.push({
+    action: "deleted",
+    editor: adminName,
+    timestamp: timestamp()
+  });
+
+  // update dataset properly
+  const newCredits = {};
+  for (const [k, v] of Object.entries(credits)) {
+    if (k !== id) newCredits[k] = v; // skip the old one
+  }
+  newCredits[newKey] = deletedEntry; // add the new deleted version
+
+  credits = newCredits;
+
+  // close modal + refresh view
+  modal.style.display = "none";
+  pendingDelete = null;
+  renderCredits();
+};
+
+document.getElementById("copyBtn").onclick = async () => {
+  const jsonText = JSON.stringify(credits, null, 4);
+  try {
+    await navigator.clipboard.writeText(jsonText);
+    copyMsg.style.opacity = "1";
+    setTimeout(() => (copyMsg.style.opacity = "0"), 1500);
+  } catch (err) {
+    alert("❌ Failed to copy JSON: " + err);
+  }
+};
+
+// Auto-login if saved
+const storedName = localStorage.getItem("adminName");
+if (storedName) {
+  adminName = storedName;
+  showAdmin();
+  loadCredits();
+} else {
+  showLogin();
+}
+document.getElementById("loginBtn").onclick = login;
 </script>
 </body>
 </html>
