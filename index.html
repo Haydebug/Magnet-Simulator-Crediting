@@ -116,10 +116,17 @@
   <body>
     <h1>💎 Gem Credit Admin</h1>
 
-    <div style="text-align:center; margin-bottom:20px;">
-      <a
-        href="https://docs.google.com/document/d/1c4_YmqF05y6V988r44feE2WvAR9FsBRNS7C47jHb6Mo/edit?usp=sharing"
-        target="_blank" style="
+   <div style="text-align:center; margin-bottom:20px;">
+  <!-- Username Lookup -->
+  <div style="margin-bottom:15px;">
+    <input id="usernameLookup" type="text" placeholder="Search Roblox username..." 
+           style="width:250px; padding:8px; border:none; border-radius:5px; background:#121212; color:#eee; text-align:center;">
+    <button id="lookupBtn" style="margin-left:8px;">Search</button>
+  </div>
+
+  <a
+    href="https://docs.google.com/document/d/1c4_YmqF05y6V988r44feE2WvAR9FsBRNS7C47jHb6Mo/edit?usp=sharing"
+    target="_blank" style="
     display:inline-block;
     background:#00ffa2;
     color:#000;
@@ -129,12 +136,12 @@
     text-decoration:none;
     transition:0.2s;
   ">
-        PASTE your edits HERE!
-      </a>
+    PASTE your edits HERE!
+  </a>
 
-      <button id="copyBtn">Click to COPY your EDITS!</button>
-      <div id="copyMsg">Copied!</div>
-    </div>
+  <button id="copyBtn">Click to COPY your EDITS!</button>
+  <div id="copyMsg">Copied!</div>
+</div>
 
     <div id="adminScreen">
       <p style="text-align:center;color:#aaa;">Logged in as: <span
@@ -364,6 +371,13 @@ document.getElementById("copyBtn").onclick = async () => {
   } catch (err) {
     alert("❌ Failed to copy JSON: " + err);
   }
+};
+
+document.getElementById("lookupBtn").onclick = () => {
+  const username = document.getElementById("usernameLookup").value.trim();
+  if (!username) return alert("Enter a username to search.");
+  const url = `https://www.roblox.com/search/users?keyword=${encodeURIComponent(username)}`;
+  window.open(url, "_blank");
 };
 
 // Auto-login if saved
