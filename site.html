@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gem Credit Editor</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #101010; color: #eee; margin: 0; padding: 20px; }
+  h1 { color: #00ffa2; }
+  #credits { margin-top: 20px; }
+  .entry { background: #1e1e1e; border-radius: 8px; padding: 10px 15px; margin-bottom: 10px; }
+  label { display: block; margin-top: 8px; }
+  input, textarea { width: 100%; padding: 6px; border-radius: 5px; border: none; margin-top: 3px; }
+  button { background: #00ffa2; color: #000; font-weight: bold; border: none; border-radius: 5px; padding: 8px 15px; margin-top: 10px; cursor: pointer; }
+  button:hover { opacity: 0.8; }
+  pre { background: #181818; padding: 10px; border-radius: 6px; overflow-x: auto; }
+  .username { color: #00ffa2; font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>💎 Gem Credit Editor</h1>
+
+<div id="credits"></div>
+
+<h2>Add New Credit</h2>
+<label>User ID</label>
+<input id="userId" type="text" placeholder="e.g. 23313558">
+<label>Amount</label>
+<input id="amount" type="number" placeholder="e.g. 250">
+<label>Message</label>
+<textarea id="message" rows="2" placeholder="Reason for credit"></textarea>
+<button id="addBtn">Add Credit</button>
+
+<h2>Updated JSON</h2>
+<pre id="jsonOutput"></pre>
+
+<script>
+const creditsContainer = document.getElementById("credits");
+const output = document.getElementById("jsonOutput");
+let credits = {};
+let usernameCache = {};
+
+async function getUsername(userId) {
+  if (usernameCache[userId]) return usernameCache[userId];
+  try {
+    const res = await fetch(`https://users.roblox.com/v1/users/${userId}`);
+    const data = await res.json();
+    const name = data.displayName || data.name || "Unknown";
+    usernameCache[userId] = name;
+    return name;
+  } catch {
+    return "Unknown";
+  }
+}
+
+async function loadCredits() {
+  try {
+    const res = await fetch("https://raw.githubusercontent.com/Haydebug/Magnet-Simulator-Crediting/main/credits.json");
+    credits = await res.json();
+    renderCredits();
+    updateOutput();
+  } catch (err) {
+    output.textContent = "❌ Failed to load credits.json: " + err;
+  }
+}
+
+async function renderCredits() {
+  creditsContainer.innerHTML = "";
+  for (const [userId, data] of Object.entries(credits)) {
+    const div = document.createElement("div");
+    div.className = "entry";
+
+    const username = await getUsername(userId);
+
+    div.innerHTML = `
+      <span class="username">${username}</span> (${userId})<br>
+      💰 ${data.amount}<br>
+      📝 ${data.message}
+    `;
+    creditsContainer.appendChild(div);
+  }
+}
+
+function updateOutput() {
+  output.textContent = JSON.stringify(credits, null, 4);
+}
+
+document.getElementById("addBtn").onclick = () => {
+  const id = document.getElementById("userId").value.trim();
+  const amt = document.getElementById("amount").value.trim();
+  const msg = document.getElementById("message").value.trim();
+
+  if (!id || !amt || !msg) return alert("Fill out all fields");
+
+  credits[id] = { amount: amt, message: msg };
+  renderCredits();
+  updateOutput();
+
+  document.getElementById("userId").value = "";
+  document.getElementById("amount").value = "";
+  document.getElementById("message").value = "";
+};
+
+loadCredits();
+</script>
+</body>
+</html>
