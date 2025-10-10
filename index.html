@@ -391,6 +391,13 @@ if (storedName) {
   showLogin();
 }
 document.getElementById("loginBtn").onclick = login;
+
+
+window.addEventListener("beforeunload", function (e) {
+  e.preventDefault();
+  e.returnValue = "⚠️ WARNING: Changes are not saved automatically. Make sure you copied them before leaving!";
+});
+
 </script>
   </body>
 </html>
