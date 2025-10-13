@@ -35,18 +35,6 @@
             }
         ]
     },
-    "976729690": {
-        "amount": "5987",
-        "message": "So sorry about the gems! Here ya go and enjoy! -Doom",
-        "status": "active",
-        "history": [
-            {
-                "action": "created",
-                "editor": "DrDoomerz",
-                "timestamp": 1760314195
-            }
-        ]
-    },
     "2684092442": {
         "amount": "10000",
         "message": "Sorry about the gems bro! We are fixing up the gift right now. Should be in next upd.",
@@ -56,6 +44,18 @@
                 "action": "created",
                 "editor": "Haydebug",
                 "timestamp": 1760067699
+            }
+        ]
+    },
+    "2961098645": {
+        "amount": "56563",
+        "message": "Hey Nick! Sorry about the troubles, here's your gems, have a good day! -Doom",
+        "status": "active",
+        "history": [
+            {
+                "action": "created",
+                "editor": "DrDoomerz",
+                "timestamp": 1760329683
             }
         ]
     }
