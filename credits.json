@@ -71,6 +71,18 @@
             }
         ]
     },
+    "1138212851": {
+        "amount": "15000",
+        "message": "Congratulations on the giveaway! Enjoy!",
+        "status": "active",
+        "history": [
+            {
+                "action": "created",
+                "editor": "DrDoomerz",
+                "timestamp": 1760933259
+            }
+        ]
+    },
     "2593039746": {
         "amount": "1485",
         "message": "Here's your gems, so sorry about that! Have a good weekend! -Doom",
