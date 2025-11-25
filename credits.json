@@ -36,14 +36,34 @@
         ]
     },
     "385256921": {
-        "amount": "12210",
-        "message": "Hey! Here's your gems, sorry about the wait! -Doom",
+        "amount": "6495",
+        "message": "Yo! We've fixed the bug and credited you the gems you deserve. Enjoy! - Rare_tendo",
         "status": "active",
         "history": [
             {
                 "action": "created",
                 "editor": "DrDoomerz",
                 "timestamp": 1762189923
+            },
+            {
+                "action": "edited",
+                "editor": "Raretendo",
+                "timestamp": 1763358737
+            },
+            {
+                "action": "edited",
+                "editor": "Raretendo",
+                "timestamp": 1763358738
+            },
+            {
+                "action": "edited",
+                "editor": "Raretendo",
+                "timestamp": 1763358743
+            },
+            {
+                "action": "edited",
+                "editor": "Raretendo",
+                "timestamp": 1763358744
             }
         ]
     },
